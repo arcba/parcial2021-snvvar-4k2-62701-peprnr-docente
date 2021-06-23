@@ -1,0 +1,123 @@
+<h3>{{Titulo}} <small>{{TituloAccionABMC[AccionABMC]}}</small></h3>
+
+<!-- Formulario Filtro de búsqueda, se ve cuando la AccionABMC es "L"(busqueda/listado)-->
+<form name="Botonera" class="bg-light" *ngIf="AccionABMC == 'L'">
+  <!-- Botones -->
+  <div class="row justify-content-center">
+    <button type="button" class="btn btn-primary" (click)="Agregar()">
+      <span class="fas fa-plus"> </span>
+      Agregar
+    </button>
+  </div>
+</form>
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' &&  Items?.length > 0">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Fecha de Alta</th>
+        <th class="text-center">Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of Items">
+        <td>{{item.ProductoNombre | uppercase}}</td>
+        <td>{{item.ProductoFechaAlta| date:'dd/MM/yyyy'}}</td>
+        <td class="text-right">{{item.ProductoStock}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--No se encontraron registros-->
+<div id="divMsjFormBusqueda" class="alert alert-info" *ngIf="AccionABMC == 'L' && Items?.length== 0">
+  <span class="fas fa-exclamation-sign"></span>{{Mensajes['SD']}}
+  <!-- texto: No se encontraron registros -->
+</div>
+
+<!-- Registro en Alta,Modificacion o Consulta -->
+<form name="FormRegistro" *ngIf="AccionABMC != 'L'" [formGroup]="FormRegistro">
+  <fieldset>
+    <!--campo nombre-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="ProductoNombre">
+        Nombre <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control text-uppercase" formControlName="ProductoNombre" [ngClass]="{'is-invalid':(FormRegistro.controls.ProductoNombre.touched || submitted) && FormRegistro.controls.ProductoNombre.errors}" />
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProductoNombre.touched || submitted) && FormRegistro.controls.ProductoNombre.errors && FormRegistro.controls.ProductoNombre.errors.required ">
+          Dato requerido
+        </span>
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProductoNombre.touched || submitted) && (FormRegistro.controls.ProductoNombre.errors?.maxlength)">Dato texto de 50 caracteres</span>
+      </div>
+    </div>
+
+    <!--campo fechaAlta-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2">Fecha de alta<span
+     class="text-danger">*</span>:
+</label>
+      <div class="col-sm-6">
+        <input class="form-control" formControlName="ProductoFechaAlta"
+            name="ProductoFechaAlta"
+            [ngClass]="{'is-invalid': (FormRegistro.controls.ProductoFechaAlta.touched || submitted)  
+&& FormRegistro.controls.ProductoFechaAlta.errors}" />
+
+        <div class="text-danger" *ngIf="(FormRegistro.controls.ProductoFechaAlta.touched || submitted) 
+        && FormRegistro.controls.ProductoFechaAlta.errors?.required">
+          Dato requerido.
+        </div>
+        <div class="text-danger" *ngIf="(FormRegistro.controls.ProductoFechaAlta.touched || submitted) 
+        && FormRegistro.controls.ProductoFechaAlta.errors?.pattern">
+          Dato fecha, formato dd/mm/aaaa.
+        </div>
+      </div>
+    </div>
+
+    <!--campo stock-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="ProductoStock">
+        Stock <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          name="ProductoStock"
+          class="form-control"
+          formControlName="ProductoStock"
+          [ngClass]="{'is-invalid': (FormRegistro.controls.ProductoStock.touched || submitted)  && FormRegistro.controls.ProductoStock.errors}"
+        />
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProductoStock.touched || submitted) && FormRegistro.controls.ProductoStock.errors && FormRegistro.controls.ProductoStock.errors.required ">
+          Dato requerido
+        </span>
+        <span class="text-danger" *ngIf="(FormRegistro.controls.ProductoStock.touched || submitted) && FormRegistro.controls.ProductoStock.errors?.pattern">
+          Dato numérico, 1 a 7 dígitos.
+        </span>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <div class="row justify-content-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="Grabar()"
+      *ngIf=" AccionABMC == 'A'"
+    >
+      <span class="fas fa-check"></span> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="Volver()">
+      <span class="fas fa-undo"></span>
+      Cancelar
+    </button>
+  </div>
+
+  <!--texto: Revisar los datos ingresados...-->
+  <div id="divMsjFormRegistro" class="row alert alert-danger" *ngIf="submitted && FormRegistro.invalid">
+    <span class="fas fa-exclamation-sign"></span>{{Mensajes['RD']}}
+  </div>
+</form>
